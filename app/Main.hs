@@ -16,11 +16,13 @@ where
 
 import Data.Attoparsec.Text (parseOnly)
 import Data.Text.IO qualified as T
-import Parse (pFilesWithReplacements)
+import Parse (RF (replacements), pFilesWithReplacements)
+import Replace (replaceAll)
 import System.Environment (getArgs)
 
 main :: IO ()
 main = do
   [fn] <- getArgs
   d <- T.readFile fn
-  print $ parseOnly pFilesWithReplacements d
+  let rs = either error id $ parseOnly pFilesWithReplacements d
+  replaceAll rs
