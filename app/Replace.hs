@@ -12,21 +12,28 @@
 --
 -- Creation date: Fri Jul 12 14:52:41 2024.
 module Replace
-  (
+  ( replaceAll,
   )
 where
 
-import Data.Text
+import Data.Foldable (Foldable (..))
+import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Text.IO qualified as T
-import Parse (R (..))
+import Parse (R (..), RF (..))
 
-replaceOne :: R -> Text -> Text
-replaceOne (R from ext) = T.replace from to
+replaceOne :: Text -> R -> Text
+replaceOne input (R from ext) = T.replace (quote from) (quote to) input
   where
+    quote x = "\"" <> x <> "\""
     to = from <> "." <> ext
 
 replaceOneFile :: RF -> IO ()
-replaceOneFile (RF file rs) = undefined
+replaceOneFile (RF file rs) = do
+  let fp = T.unpack file
+  input <- T.readFile fp
+  let input' = foldl' replaceOne input rs
+  T.writeFile fp input'
 
--- dat <- T.readFile (T.unpack file)
+replaceAll :: [RF] -> IO ()
+replaceAll = mapM_ replaceOneFile
