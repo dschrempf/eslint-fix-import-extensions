@@ -1,13 +1,17 @@
 cabal-version:      3.4
 name:               eslint-fix-import-extensions
-version:            0.1.0.0
+version:            0.1.0.1
 synopsis:           Fix import extensions
 description:
   Please see the README at <https://github.com/dschrempf/eslint-fix-import-extensions#readme>
 
 category:           Math, Statistics
-homepage:           https://github.com/dschrempf/eslint-fix-import-extensions#readme
-bug-reports:        https://github.com/dschrempf/eslint-fix-import-extensions/issues
+homepage:
+  https://github.com/dschrempf/eslint-fix-import-extensions#readme
+
+bug-reports:
+  https://github.com/dschrempf/eslint-fix-import-extensions/issues
+
 author:             Dominik Schrempf
 maintainer:         dominik.schrempf@gmail.com
 copyright:          2024 Dominik Schrempf
@@ -43,14 +47,20 @@ common bench
 common exec
   default-language: GHC2021
   ghc-options:
-    -Wall -Wunused-packages -Wredundant-constraints
-    -threaded -rtsopts -with-rtsopts=-N
+    -Wall -Wunused-packages -Wredundant-constraints -threaded -rtsopts
+    -with-rtsopts=-N
 
 executable fix-imports
   import:          common, exec
   main-is:         Main.hs
   hs-source-dirs:  app
   other-modules:
+    Parse
+    Replace
+
   autogen-modules:
   ghc-options:
-  build-depends:   base >=4.7 && <5
+  build-depends:
+    , attoparsec
+    , base        >=4.7 && <5
+    , text
