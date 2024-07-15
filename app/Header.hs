@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 -- |
--- Module      :  Imports
+-- Module      :  Header
 -- Description :  Separate imports from rest of file
 -- Copyright   :  2024 Dominik Schrempf
 -- License     :  GPL-3.0-or-later
@@ -11,9 +11,9 @@
 -- Portability :  portable
 --
 -- Creation date: Mon Jul 15 09:44:16 2024.
-module Imports
+module Header
   ( TsFile (..),
-    breakImports,
+    breakHeader,
   )
 where
 
@@ -47,20 +47,23 @@ pComment = do
   endOfLine
   pure $ w <> c <> r <> "\n"
 
-pImport :: Parser Text
-pImport = do
-  i <- string "import"
+pHeader :: Parser Text
+pHeader = do
+  i <- string "import" <|> string "export"
   w1 <- takeTill (== ';')
   c <- string ";"
   endOfLine
   pure $ i <> w1 <> c <> "\n"
 
-pBreakImports :: Parser (Text, Text)
-pBreakImports = do
-  is <- many $ pImport <|> pComment
+emptyLine :: Parser Text
+emptyLine = string "\n"
+
+pBreakHeader :: Parser (Text, Text)
+pBreakHeader = do
+  is <- many $ pHeader <|> pComment <|> emptyLine
   re <- takeWhile (const True)
   endOfInput
   pure (T.concat is, re)
 
-breakImports :: Text -> (Text, Text)
-breakImports = either error id . parseOnly pBreakImports
+breakHeader :: Text -> (Text, Text)
+breakHeader = either error id . parseOnly pBreakHeader

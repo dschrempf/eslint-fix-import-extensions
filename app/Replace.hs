@@ -20,7 +20,7 @@ import Data.Foldable (foldlM)
 import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Text.IO qualified as T
-import Imports (breakImports)
+import Header (breakHeader)
 import Parse (R (..), RF (..))
 import System.Directory (doesFileExist, withCurrentDirectory)
 import System.FilePath (takeDirectory)
@@ -46,9 +46,9 @@ replaceOneFile :: RF -> IO ()
 replaceOneFile (RF file rs) = do
   let fp = T.unpack file
   input <- T.readFile fp
-  let (imports, rest) = breakImports input
+  let (header, rest) = breakHeader input
       path = takeDirectory $ T.unpack file
-  imports' <- foldlM (replaceOne path) imports rs
+  imports' <- foldlM (replaceOne path) header rs
   T.writeFile fp (imports' <> rest)
 
 replaceAll :: [RF] -> IO ()
