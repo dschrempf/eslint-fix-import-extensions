@@ -64,4 +64,6 @@ executable fix-imports
   build-depends:
     , attoparsec
     , base        >=4.7 && <5
+    , directory
+    , filepath
     , text

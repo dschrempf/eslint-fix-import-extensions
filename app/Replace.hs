@@ -16,25 +16,39 @@ module Replace
   )
 where
 
-import Data.Foldable (Foldable (..))
+import Data.Foldable (foldlM)
 import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Text.IO qualified as T
 import Imports (breakImports)
 import Parse (R (..), RF (..))
+import System.Directory (doesFileExist, withCurrentDirectory)
+import System.FilePath (takeDirectory)
 
-replaceOne :: Text -> R -> Text
-replaceOne input (R from ext) = T.replace (quote from) (quote to) input
+replaceOne :: FilePath -> Text -> R -> IO Text
+replaceOne directory input (R from ext) = withCurrentDirectory directory $ do
+  fileExists <- doesFileExist $ T.unpack to
+  if fileExists
+    then pure $ T.replace (quote from) (quote to) input
+    else do
+      indexFileExists <- doesFileExist $ T.unpack toIndex
+      if indexFileExists
+        then pure $ T.replace (quote from) (quote toIndex) input
+        else do
+          T.putStrLn $ "warning: could not add " <> ext <> " to " <> from
+          pure input
   where
     quote x = "\"" <> x <> "\""
     to = from <> "." <> ext
+    toIndex = from <> "/index." <> ext
 
 replaceOneFile :: RF -> IO ()
 replaceOneFile (RF file rs) = do
   let fp = T.unpack file
   input <- T.readFile fp
   let (imports, rest) = breakImports input
-  let imports' = foldl' replaceOne imports rs
+      path = takeDirectory $ T.unpack file
+  imports' <- foldlM (replaceOne path) imports rs
   T.writeFile fp (imports' <> rest)
 
 replaceAll :: [RF] -> IO ()

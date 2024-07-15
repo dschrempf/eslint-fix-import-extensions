@@ -51,14 +51,16 @@ pImport :: Parser Text
 pImport = do
   i <- string "import"
   w1 <- takeTill (== ';')
-  pure $ i <> w1
+  c <- string ";"
+  endOfLine
+  pure $ i <> w1 <> c <> "\n"
 
 pBreakImports :: Parser (Text, Text)
 pBreakImports = do
   is <- many $ pImport <|> pComment
   re <- takeWhile (const True)
   endOfInput
-  pure (T.unlines is, re)
+  pure (T.concat is, re)
 
 breakImports :: Text -> (Text, Text)
 breakImports = either error id . parseOnly pBreakImports
