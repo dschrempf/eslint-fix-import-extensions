@@ -18,11 +18,9 @@ import Data.Attoparsec.Text (parseOnly)
 import Data.Text.IO qualified as T
 import Parse (pFilesWithReplacements)
 import Replace (replaceAll)
-import System.Environment (getArgs)
 
 main :: IO ()
 main = do
-  [fn] <- getArgs
-  d <- T.readFile fn
-  let rs = either error id $ parseOnly pFilesWithReplacements d
+  lint <- T.getContents
+  let rs = either error id $ parseOnly pFilesWithReplacements lint
   replaceAll rs
