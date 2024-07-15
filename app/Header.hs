@@ -23,6 +23,7 @@ import Data.Attoparsec.Text
     endOfInput,
     endOfLine,
     isEndOfLine,
+    manyTill,
     parseOnly,
     string,
     takeTill,
@@ -37,10 +38,21 @@ import Prelude hiding (takeWhile)
 data TsFile = TsFile {imports :: Text, code :: Text}
 
 whitespace :: Parser Text
-whitespace = takeWhile1 isSpace
+whitespace = takeWhile isSpace
 
-pComment :: Parser Text
-pComment = do
+commentChunks :: Parser [Text]
+commentChunks = manyTill (takeWhile1 (/= '*')) (string "*/")
+
+pCommentMultiLine :: Parser Text
+pCommentMultiLine = do
+  wsS <- whitespace
+  cmtS <- string "/*"
+  cmts <- commentChunks
+  wsE <- whitespace
+  pure $ wsS <> cmtS <> T.concat cmts <> "*/" <> wsE
+
+pCommentLine :: Parser Text
+pCommentLine = do
   w <- whitespace
   c <- string "//"
   r <- takeTill isEndOfLine
@@ -60,7 +72,7 @@ emptyLine = string "\n"
 
 pBreakHeader :: Parser (Text, Text)
 pBreakHeader = do
-  is <- many $ pHeader <|> pComment <|> emptyLine
+  is <- many $ pHeader <|> pCommentLine <|> pCommentMultiLine <|> emptyLine
   re <- takeWhile (const True)
   endOfInput
   pure (T.concat is, re)
