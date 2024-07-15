@@ -16,7 +16,7 @@ where
 
 import Data.Attoparsec.Text (parseOnly)
 import Data.Text.IO qualified as T
-import Parse (RF (replacements), pFilesWithReplacements)
+import Parse (pFilesWithReplacements)
 import Replace (replaceAll)
 import System.Environment (getArgs)
 

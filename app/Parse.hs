@@ -35,7 +35,7 @@ import Data.Attoparsec.Text
     (<?>),
   )
 import Data.Char (isSpace)
-import Data.Text (Text, singleton)
+import Data.Text (Text)
 
 data R = R {from :: !Text, ext :: !Text}
   deriving (Show)

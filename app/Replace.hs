@@ -20,6 +20,7 @@ import Data.Foldable (Foldable (..))
 import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Text.IO qualified as T
+import Imports (breakImports)
 import Parse (R (..), RF (..))
 
 replaceOne :: Text -> R -> Text
@@ -32,8 +33,9 @@ replaceOneFile :: RF -> IO ()
 replaceOneFile (RF file rs) = do
   let fp = T.unpack file
   input <- T.readFile fp
-  let input' = foldl' replaceOne input rs
-  T.writeFile fp input'
+  let (imports, rest) = breakImports input
+  let imports' = foldl' replaceOne imports rs
+  T.writeFile fp (imports' <> rest)
 
 replaceAll :: [RF] -> IO ()
 replaceAll = mapM_ replaceOneFile
