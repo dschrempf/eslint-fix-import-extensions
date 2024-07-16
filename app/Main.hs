@@ -23,4 +23,5 @@ main :: IO ()
 main = do
   lint <- T.getContents
   let rs = either error id $ parseOnly pFilesWithReplacements lint
+  mapM_ print rs
   replaceAll rs
