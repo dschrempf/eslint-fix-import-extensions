@@ -29,6 +29,7 @@ import Data.Attoparsec.Text
     many1',
     sepBy1',
     skipSpace,
+    skipWhile,
     string,
     takeTill,
     takeWhile1,
@@ -108,6 +109,6 @@ pFilesWithReplacements = do
   _ <- many1' (lineWith "✖")
   skipSpace
   _ <- many1' (lineWith "ELIFECYCLE")
-  skipSpace
+  _ <- skipWhile (const True)
   endOfInput
   pure rs
