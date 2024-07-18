@@ -25,6 +25,14 @@ import Parse (R (..), RF (..))
 import System.Directory (doesFileExist, withCurrentDirectory)
 import System.FilePath (takeDirectory)
 
+-- TODO: Module resolution for all imports. This is a bit more complicated.
+-- Either use `tsc --traceResolution` (but that might be slow). Or write a
+-- custom script in TypeScript using the compiler API to resolve the module and
+-- return the file name.
+
+-- traceModule :: FilePath -> Text -> IO Text
+-- traceModule fileName importString = undefined
+
 replaceOne :: FilePath -> Text -> R -> IO Text
 replaceOne directory input (R from ext) = withCurrentDirectory directory $ do
   fileExists <- doesFileExist $ T.unpack to
