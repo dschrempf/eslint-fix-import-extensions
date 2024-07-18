@@ -29,11 +29,11 @@ replaceOne :: FilePath -> Text -> R -> IO Text
 replaceOne directory input (R from ext) = withCurrentDirectory directory $ do
   fileExists <- doesFileExist $ T.unpack to
   if fileExists
-    then pure $ T.replace (quote from) (quote to) input
+    then pure $ replaceWith to
     else do
       indexFileExists <- doesFileExist $ T.unpack toIndex
       if indexFileExists
-        then pure $ T.replace (quote from) (quote toIndex) input
+        then pure $ replaceWith toIndex
         else do
           T.putStrLn $ "warning: could not add " <> ext <> " to " <> from
           pure input
@@ -41,6 +41,7 @@ replaceOne directory input (R from ext) = withCurrentDirectory directory $ do
     quote x = "\"" <> x <> "\""
     to = from <> "." <> ext
     toIndex = from <> "/index." <> ext
+    replaceWith x = T.replace (quote from) (quote x) input
 
 replaceOneFile :: RF -> IO ()
 replaceOneFile (RF file rs) = do
