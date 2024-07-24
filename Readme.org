@@ -1,6 +1,19 @@
-Usage:
+* Compilation
+1. Install Haskell toolchain (https://www.haskell.org/ghcup/, I use GHC 9.6.5
+   and =cabal=).
 
+2. Compile:
+
+   #+name: Compilation
+   #+begin_src sh :exports
+     cabal build
+     cabal install
+   #+end_src
+
+ Check that the path of the installed binary is in your =PATH=.
+
+* Usage
 #+name: Usage
 #+begin_src sh :exports
-pnpm run lint | fix-imports
+  pnpm run lint | fix-imports
 #+end_src
